@@ -1,0 +1,11 @@
+
+.item {
+    display: inline;
+    margin-right: 2px;
+}
+
+.delbtn {
+    margin: 0;
+    border: none;
+    background: none;
+}

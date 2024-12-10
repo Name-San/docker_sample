@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href=" css/styles.css">
+    <script src="https://kit.fontawesome.com/c03bb76df8.js" crossorigin="anonymous"></script>
+    <title>Minimal Todo List</title>
+</head>
+<body>
+    <h1>Simple Todo List</h1>
+    <input id="new-item" type="text" placeholder="Enter your item here">
+    <button id="add-item" onclick="addItem()">Add Item</button>
+    <ul id="item-list"></ul>
+    
+    <script>
+        let items=[]
+
+        function delItem(index) {
+            items.splice(index, 1)
+            listItem()
+        }
+
+        function addItem() {
+            item = document.getElementById("new-item").value;
+            if(item) {
+                items.push(item)
+                document.getElementById("new-item").value = ""
+                listItem()
+            } else {
+                alert("Invalid item!")
+            }
+            
+        }
+
+        function listItem() {
+            lists = ''
+            items.forEach((item, index) => {
+                lists += `<li>
+                            <div class="item">${item}</div>
+                            <button class="delbtn" id="del-item" onclick="delItem(${index})">
+                                <span style="color: Tomato;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </span>
+                            </button>
+                        </li>`
+            })
+            document.getElementById("item-list").innerHTML = lists
+        }
+
+        document.getElementById("new-item").addEventListener("keypress", (event) => {
+            if(event.key === "Enter"){
+                addItem()
+            }
+        })
+    </script>
+</body>
+</html>
