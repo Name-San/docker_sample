@@ -14,39 +14,75 @@
     <ul id="item-list"></ul>
     
     <script>
-        let items=[]
 
-        function delItem(index) {
-            items.splice(index, 1)
-            listItem()
-        }
+        const API_URL = 'http://localhost:8000'
 
-        function addItem() {
-            item = document.getElementById("new-item").value;
-            if(item) {
-                items.push(item)
-                document.getElementById("new-item").value = ""
-                listItem()
-            } else {
-                alert("Invalid item!")
+        async function fetchTodos() {
+            try {
+                const response = await fetch(`${API_URL}/todos`)
+                const todos = await response.json()
+                const list = document.getElementById("item-list")
+                list.innerHTML = ''
+                todos.forEach(todo => {
+                    const li = document.createElement("li")
+                    const div = document.createElement("div")
+                    div.classList.add("item")
+                    div.textContent = todo.content
+                    li.appendChild(div)
+
+                    const delbutton = document.createElement("button")
+                    delbutton.classList.add("delbtn")
+                    delbutton.onclick = () => delItem(todo.id)
+
+                    const span = document.createElement("span")
+                    span.setAttribute("style", "color: Tomato")
+
+                    const i = document.createElement("i")
+                    i.classList.add("fa-solid","fa-trash")
+
+                    span.appendChild(i)
+                    delbutton.appendChild(span)
+                    li.appendChild(delbutton)
+                    list.appendChild(li)
+                })
+            } catch (error) {
+                alert(`An error occured on fetching Todos: ${error.message}`)
             }
-            
+        }
+        
+        async function addItem() {
+            try {
+                const item = document.getElementById("new-item")
+                if(item.value.trim()) {
+                    const response = await fetch(`${API_URL}/todos`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content: item.value }),
+                    });
+                    if(response.ok) {
+                        item.value = ''
+                        fetchTodos();
+                    }
+                } else {
+                    alert("Invalid input")
+                }
+            } catch (e) {
+                alert(`Error on adding item: ${e.message}`)
+            }
         }
 
-        function listItem() {
-            lists = ''
-            items.forEach((item, index) => {
-                lists += `<li>
-                            <div class="item">${item}</div>
-                            <button class="delbtn" id="del-item" onclick="delItem(${index})">
-                                <span style="color: Tomato;">
-                                    <i class="fa-solid fa-trash"></i>
-                                </span>
-                            </button>
-                        </li>`
-            })
-            document.getElementById("item-list").innerHTML = lists
+        async function delItem(todo_id) {
+            const response = await fetch(`${API_URL}/todos/${todo_id}`, {
+                method: 'DELETE',                
+            });           
+            if(response.ok) {
+                fetchTodos();
+            }
         }
+
+        fetchTodos();
 
         document.getElementById("new-item").addEventListener("keypress", (event) => {
             if(event.key === "Enter"){
