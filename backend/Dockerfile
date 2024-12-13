@@ -5,6 +5,9 @@ WORKDIR /app
 COPY pyproject.toml requirements.txt ./
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir wheels -r requirements.txt
 
+COPY src src
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir wheels .
+
 FROM python:3.13-slim AS runner
 
 COPY --from=builder /app/wheels /wheels
